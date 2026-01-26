@@ -1,10 +1,10 @@
 const products = [
     // --- NEW MEN ARRIVALS ---
-    { id: 1, name: "هودي سوستة شتوي - برتقالي", price: 20, category: "men", subCategory: "hoodies", image: "images/hoodies/hoodie1.png", badge: "SALE", sizes: ["M", "L", "XL", "XXL"], colors: ["برتقالي", "أسود", "كحلي", "رمادي"] },
-    { id: 2, name: "هودي سوستة تشكيلة ألوان", price: 50, category: "men", subCategory: "hoodies", image: "images/hoodies/hoodie2.png", badge: "SALE", sizes: ["L", "XL"], colors: ["نبيتي", "رمادي", "أسود"] },
-    { id: 3, name: "هودي سوستة أسود - مطبوع", price: 520, category: "men", subCategory: "hoodies", image: "images/hoodies/hoodie3.png", badge: "SALE", sizes: ["XL", "XXL"], colors: ["أسود"] },
-    { id: 4, name: "هودي سوستة رمادي - ستايل", price: 520, category: "men", subCategory: "hoodies", image: "images/hoodies/hoodie4.png", badge: "SALE", sizes: ["M", "L", "XL"], colors: ["رمادي"] },
-    { id: 5, name: "هودي ستوسي رمادي - قطن", price: 50, category: "men", subCategory: "hoodies", image: "images/hoodies/hoodie5.png", badge: "SALE", sizes: ["S", "M", "L"], colors: ["رمادي"] },
+    { id: 1, name: "هودي سوستة شتوي - برتقالي", price: 200, category: "men", subCategory: "hoodies", image: "images/hoodies/hoodie1.png", badge: "SALE", sizes: ["M", "L", "XL", "XXL"], colors: ["برتقالي", "أسود", "كحلي", "رمادي"] },
+    { id: 2, name: "هودي سوستة تشكيلة ألوان", price: 500, category: "men", subCategory: "hoodies", image: "images/hoodies/hoodie2.png", badge: "SALE", sizes: ["L", "XL"], colors: ["نبيتي", "رمادي", "أسود"] },
+    { id: 3, name: "هودي سوستة أسود - مطبوع", price: 50, category: "men", subCategory: "hoodies", image: "images/hoodies/hoodie3.png", badge: "SALE", sizes: ["XL", "XXL"], colors: ["أسود"] },
+    { id: 4, name: "هودي سوستة رمادي - ستايل", price: 50, category: "men", subCategory: "hoodies", image: "images/hoodies/hoodie4.png", badge: "SALE", sizes: ["M", "L", "XL"], colors: ["رمادي"] },
+    { id: 5, name: "هودي ستوسي رمادي - قطن", price: 500, category: "men", subCategory: "hoodies", image: "images/hoodies/hoodie5.png", badge: "SALE", sizes: ["S", "M", "L"], colors: ["رمادي"] },
     { id: 6, name: "هودي ستوسي خلفي - ألوان", price: 520, category: "men", subCategory: "hoodies", image: "images/hoodies/hoodie6.png", badge: "SALE", sizes: ["L", "XL", "XXL"], colors: ["أخضر زيتي", "بني", "نبيتي", "أسود"] },
     { id: 7, name: "هودي ستوسي تشكيلة شتوية", price: 520, category: "men", subCategory: "hoodies", image: "images/hoodies/hoodie7.png", badge: "SALE", sizes: ["M", "XL"], colors: ["أخضر", "بني", "نبيتي", "أسود"] },
     { id: 8, name: "بنطلون جينز رمادي - مقطع", price: 520, category: "men", subCategory: "jeans", image: "images/jeans/jeans1.png", badge: "SALE", sizes: ["36", "38", "40"], colors: ["رمادي"] },
