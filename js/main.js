@@ -165,6 +165,20 @@ function setupEventListeners() {
                 colorOptionsContainer.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
                 selectedColor = btn.innerText;
+
+                // Update modal image if color has a specific image
+                if (selectedProductForSize && selectedProductForSize.colorVariants) {
+                    const variant = selectedProductForSize.colorVariants.find(v => v.name === selectedColor);
+                    if (variant) {
+                        if (variant.image) document.getElementById('modal-img').src = variant.image;
+                        else document.getElementById('modal-img').src = selectedProductForSize.image;
+
+                        // UPDATE SIZES for this color
+                        const sizeContainer = document.querySelector('.size-options');
+                        const variantSizes = (variant.sizes && variant.sizes.length > 0) ? variant.sizes : (selectedProductForSize.sizes || []);
+                        sizeContainer.innerHTML = variantSizes.map(s => `<button class="size-btn">${s}</button>`).join('');
+                    }
+                }
             }
         };
     }
@@ -203,18 +217,34 @@ window.openSizeModal = (id) => {
 
     modalProductName.innerText = p.name;
     modalProductPrice.innerText = `${p.price} جنيه`;
+    document.getElementById('modal-img').src = p.image;
 
     // Render Colors
     const colorContainer = document.getElementById('modal-color-options');
     if (colorContainer) {
-        colorContainer.innerHTML = (p.colors || ["أساسي"]).map((c, index) =>
+        const colors = (p.colorVariants && p.colorVariants.length > 0)
+            ? p.colorVariants.map(v => v.name)
+            : (p.colors && p.colors.length > 0 ? p.colors : ["أساسي"]);
+
+        colorContainer.innerHTML = colors.map((c, index) =>
             `<button class="color-btn ${index === 0 ? 'selected' : ''}">${c}</button>`
         ).join('');
+
+        if (p.colorVariants && p.colorVariants[0] && p.colorVariants[0].image) {
+            document.getElementById('modal-img').src = p.colorVariants[0].image;
+        }
     }
 
-    // Render Sizes
+    // Render Sizes (based on first color or global)
     const sizeContainer = document.querySelector('.size-options');
-    sizeContainer.innerHTML = (p.sizes || []).map(s => `<button class="size-btn">${s}</button>`).join('');
+    let initialSizes = p.sizes || [];
+    if (p.colorVariants && p.colorVariants.length > 0) {
+        const firstVariant = p.colorVariants[0];
+        if (firstVariant.sizes && firstVariant.sizes.length > 0) {
+            initialSizes = firstVariant.sizes;
+        }
+    }
+    sizeContainer.innerHTML = initialSizes.map(s => `<button class="size-btn">${s}</button>`).join('');
 
     sizeModal.classList.add('active');
 };
@@ -239,9 +269,20 @@ window.updateCartQuantity = (id, delta) => {
 function confirmAddToCart(p, size) {
     const color = selectedColor || (p.colors ? p.colors[0] : "أساسي");
     const cartId = `${p.id}-${size}-${color}`;
+
+    // Find variant image for cart
+    let cartImage = p.image;
+    if (p.colorVariants) {
+        const variant = p.colorVariants.find(v => v.name === color);
+        if (variant && variant.image) cartImage = variant.image;
+    }
+
     const existing = cart.find(i => i.cartId === cartId);
-    if (existing) existing.quantity++;
-    else cart.push({ ...p, cartId, size, color, quantity: 1 });
+    if (existing) {
+        existing.quantity++;
+    } else {
+        cart.push({ ...p, cartId, size, color, quantity: 1, image: cartImage });
+    }
     updateCartUI();
     openCartSidebar();
 }

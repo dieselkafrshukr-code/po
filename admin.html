@@ -266,9 +266,16 @@
                         <label>المقاسات (افصل بفاصلة)</label>
                         <input type="text" id="p-sizes" value="M, L, XL, XXL" placeholder="M, L, XL">
                     </div>
-                    <div class="form-group">
-                        <label>الألوان (افصل بفاصلة)</label>
-                        <input type="text" id="p-colors" value="أسود, رمادي, كحلي" placeholder="أسود, رمادي">
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>الألوان المتاحة (صور لكل لون)</label>
+                        <div id="color-variants-container"
+                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 10px;">
+                            <!-- Variants will be added here -->
+                        </div>
+                        <button type="button" class="btn-add"
+                            style="background:#444; margin-top: 10px; width: fit-content;" onclick="addColorVariant()">
+                            <i class="fas fa-plus"></i> إضافة لون جديد
+                        </button>
                     </div>
                     <div class="form-group">
                         <label>شعار (Badge)</label>

@@ -26,6 +26,9 @@ const productsListBody = document.getElementById('products-list-body');
 const subCatSelect = document.getElementById('p-subcategory');
 const previewImg = document.getElementById('preview-img');
 const globalLoader = document.getElementById('global-loader');
+const colorVariantsContainer = document.getElementById('color-variants-container');
+
+let colorVariants = [];
 
 const subMap = {
     clothes: [
@@ -63,8 +66,81 @@ function toggleForm() {
         previewImg.style.display = 'none';
         document.getElementById('edit-id').value = '';
         document.getElementById('p-image-base64').value = '';
+        colorVariants = [];
+        renderColorVariants();
         document.getElementById('form-title').innerText = 'إضافة منتج جديد';
     }
+}
+
+function addColorVariant(name = '', image = '') {
+    const id = Date.now() + Math.random();
+    colorVariants.push({ id, name, image });
+    renderColorVariants();
+}
+
+function removeColorVariant(id) {
+    colorVariants = colorVariants.filter(v => v.id !== id);
+    renderColorVariants();
+}
+
+function renderColorVariants() {
+    colorVariantsContainer.innerHTML = colorVariants.map(v => `
+        <div class="stat-card" style="padding: 15px; position: relative; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); text-align: right;">
+            <i class="fas fa-times" style="position: absolute; top: 10px; left: 10px; color: #f44336; cursor: pointer; font-size: 1.1rem; z-index: 10;" onclick="removeColorVariant(${v.id})"></i>
+            
+            <label style="font-size: 0.75rem; color: #aaa; display: block; margin-bottom: 5px;">اسم اللون:</label>
+            <input type="text" placeholder="مثال: أحمر" value="${v.name}" onchange="updateVariantName(${v.id}, this.value)" style="width: 100%; margin-bottom: 10px; font-size: 0.85rem; padding: 8px;">
+            
+            <label style="font-size: 0.75rem; color: #aaa; display: block; margin-bottom: 5px;">مقاسات هذا اللون (M, L, XL):</label>
+            <input type="text" placeholder="M, L, XL" value="${v.sizes || ''}" onchange="updateVariantSizes(${v.id}, this.value)" style="width: 100%; margin-bottom: 10px; font-size: 0.85rem; padding: 8px; border-color: #444;">
+
+            <label style="font-size: 0.75rem; color: #aaa; display: block; margin-bottom: 5px;">صورة اللون:</label>
+            <input type="file" accept="image/*" onchange="handleVariantImage(this, ${v.id})" style="font-size: 0.7rem; width: 100%; margin-bottom: 10px;">
+            <img src="${v.image || 'https://placehold.co/100x120?text=No+Color+Image'}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; ${v.image ? '' : 'filter: grayscale(1); opacity: 0.3;'}">
+        </div>
+    `).join('');
+}
+
+function updateVariantName(id, name) {
+    const v = colorVariants.find(v => v.id === id);
+    if (v) v.name = name;
+}
+
+function updateVariantSizes(id, sizes) {
+    const v = colorVariants.find(v => v.id === id);
+    if (v) v.sizes = sizes;
+}
+
+async function handleVariantImage(input, id) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const base64 = e.target.result;
+            const compressed = await compressImage(base64);
+            const v = colorVariants.find(v => v.id === id);
+            if (v) {
+                v.image = compressed;
+                renderColorVariants();
+            }
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+async function compressImage(base64, maxWidth = 800) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.src = base64;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ratio = img.width / img.height;
+            canvas.width = Math.min(maxWidth, img.width);
+            canvas.height = canvas.width / ratio;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', 0.85)); // Higher quality
+        };
+    });
 }
 
 function updateSubCats() {
@@ -112,10 +188,17 @@ form.onsubmit = async (e) => {
         category: "men",
         parentCategory: document.getElementById('p-category').value,
         subCategory: document.getElementById('p-subcategory').value,
-        sizes: document.getElementById('p-sizes').value.split(',').map(s => s.trim()),
-        colors: document.getElementById('p-colors').value.split(',').map(c => c.trim()),
+        // Main product sizes (fallback)
+        sizes: document.getElementById('p-sizes').value.split(',').map(s => s.trim()).filter(s => s),
+        // Color specific variants (detailed)
+        colorVariants: colorVariants.map(v => ({
+            name: v.name,
+            image: v.image,
+            sizes: v.sizes ? v.sizes.split(',').map(s => s.trim()).filter(s => s) : []
+        })),
+        colors: colorVariants.map(v => v.name),
         badge: document.getElementById('p-badge').value,
-        image: document.getElementById('p-image-base64').value || (id ? undefined : 'https://placehold.co/400x600?text=No+Image'),
+        image: document.getElementById('p-image-base64').value || (colorVariants.length > 0 && colorVariants[0].image ? colorVariants[0].image : (id ? undefined : 'https://placehold.co/400x600?text=No+Image')),
         updatedAt: new Date().toISOString()
     };
 
@@ -239,9 +322,17 @@ async function editProduct(id) {
     document.getElementById('p-price').value = p.price;
     document.getElementById('p-category').value = p.parentCategory || 'clothes';
     updateSubCats();
-    setTimeout(() => { document.getElementById('p-subcategory').value = p.subCategory; }, 10);
+    document.getElementById('p-subcategory').value = p.subCategory;
     document.getElementById('p-sizes').value = (p.sizes || []).join(', ');
-    document.getElementById('p-colors').value = (p.colors || []).join(', ');
+
+    // Load Color Variants
+    colorVariants = (p.colorVariants || (p.colors || []).map(c => ({ name: c, image: '', sizes: '' }))).map(v => ({
+        ...v,
+        id: Math.random(),
+        sizes: Array.isArray(v.sizes) ? v.sizes.join(', ') : (v.sizes || '')
+    }));
+    renderColorVariants();
+
     document.getElementById('p-badge').value = p.badge || '';
     document.getElementById('p-image-base64').value = p.image;
     previewImg.src = p.image;
