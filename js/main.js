@@ -300,21 +300,21 @@ function updateCartUI() {
         totalEl.innerText = '0 جنيه';
     } else {
         list.innerHTML = cart.map(i => `
-            <div class="cart-item" style="display:flex; gap:15px; margin-bottom:15px; background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.03);">
-                <img src="${i.image}" style="width:65px; height:65px; object-fit:cover; border-radius:10px;">
-                <div style="flex:1; color:#fff;">
-                    <h4 style="font-size:0.9rem; margin-bottom:4px;">${i.name}</h4>
-                    <div style="font-size:0.75rem; color:#aaa;">المقاس: <span style="color:#d4af37">${i.size}</span> | اللون: <span style="color:#d4af37">${i.color}</span></div>
+            <div class="cart-item">
+                <img src="${i.image}">
+                <div class="cart-item-info">
+                    <h4>${i.name}</h4>
+                    <div class="cart-item-details">المقاس: <span>${i.size}</span> | اللون: <span>${i.color}</span></div>
                     
                     <div class="qty-control" style="display:flex; align-items:center; gap:10px; margin-top:8px;">
-                        <button onclick="updateCartQuantity('${i.cartId}', -1)" style="background:rgba(255,255,255,0.1); border:none; color:#fff; width:24px; height:24px; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fas fa-minus" style="font-size:0.7rem;"></i></button>
-                        <span style="font-weight:bold; font-size:0.9rem; min-width:20px; text-align:center;">${i.quantity}</span>
-                        <button onclick="updateCartQuantity('${i.cartId}', 1)" style="background:var(--primary); border:none; color:#fff; width:24px; height:24px; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fas fa-plus" style="font-size:0.7rem;"></i></button>
+                        <button onclick="updateCartQuantity('${i.cartId}', -1)" style="background:rgba(255,255,255,0.1); border:none; color:#fff; width:28px; height:28px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fas fa-minus" style="font-size:0.8rem;"></i></button>
+                        <span style="font-weight:bold; font-size:1rem; min-width:24px; text-align:center;">${i.quantity}</span>
+                        <button onclick="updateCartQuantity('${i.cartId}', 1)" style="background:var(--primary); border:none; color:#fff; width:28px; height:28px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fas fa-plus" style="font-size:0.8rem;"></i></button>
                     </div>
 
-                    <div style="color:#d4af37; font-weight:800; margin-top:8px;">${i.price * i.quantity} جنيه</div>
+                    <div style="color:#d4af37; font-weight:800; margin-top:10px; font-size:1.1rem;">${i.price * i.quantity} جنيه</div>
                 </div>
-                <button onclick="removeFromCart('${i.cartId}')" style="background:none; border:none; color:#ff4444; cursor:pointer; font-size:1.1rem; padding:5px; align-self: flex-start;">
+                <button onclick="removeFromCart('${i.cartId}')" style="background:none; border:none; color:#ff4444; cursor:pointer; font-size:1.2rem; padding:8px; align-self: flex-start;">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
