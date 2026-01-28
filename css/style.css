@@ -1015,9 +1015,9 @@ footer {
 .cart-sidebar {
     position: fixed;
     top: 0;
+    bottom: 0;
     right: 0;
     width: 400px;
-    height: 100%;
     height: 100dvh;
     background: #0d0d0d;
     z-index: 5000;
@@ -1028,7 +1028,7 @@ footer {
     transform: translateX(110%);
     border-left: 1px solid rgba(255, 255, 255, 0.05);
     visibility: hidden;
-    /* Prevent interaction when closed */
+    overflow: hidden;
 }
 
 .cart-sidebar.open {
@@ -1037,14 +1037,13 @@ footer {
 }
 
 .cart-header {
-    padding: 20px 25px;
+    padding: 15px 20px;
     background: #111;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
-    /* Don't compress */
 }
 
 .cart-header h3 {
@@ -1087,12 +1086,12 @@ footer {
 }
 
 .cart-footer {
-    padding: 20px 25px;
-    padding-bottom: calc(25px + env(safe-area-inset-bottom));
+    padding: 15px 20px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
     background: #111;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
-    /* Keep it grounded */
+    box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.3);
 }
 
 .cart-total {
@@ -1112,7 +1111,7 @@ footer {
 .checkout-btn {
     width: 100%;
     padding: 16px;
-    background: var(--primary);
+    background: #e20613;
     color: #fff;
     border: none;
     border-radius: 12px;
@@ -1120,9 +1119,10 @@ footer {
     font-weight: 900;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 15px rgba(226, 6, 19, 0.3);
+    box-shadow: 0 10px 20px rgba(226, 6, 19, 0.4);
     display: block;
     text-align: center;
+    margin-top: 5px;
 }
 
 .checkout-btn:hover {
@@ -1467,9 +1467,10 @@ footer {
 /* Close Modal Button */
 .close-modal {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.05);
+    top: 15px;
+    right: 15px;
+    background: #ff0000;
+    /* Solid red for visibility */
     border: none;
     color: #fff;
     width: 35px;
@@ -1480,8 +1481,11 @@ footer {
     justify-content: center;
     align-items: center;
     transition: 0.3s;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(255, 0, 0, 0.4);
 }
 
 .close-modal:hover {
-    background: #ff0000;
+    background: #d40000;
+    transform: scale(1.1);
 }
