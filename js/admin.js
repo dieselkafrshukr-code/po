@@ -1,11 +1,11 @@
 // 🚀 DIESEL ADMIN ENGINE - HYBRID VERSION (Firebase + Local Fallback)
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBFRqe3lhvzG0FoN0uAJlAP-VEz9bKLjUc",
+    authDomain: "mre23-4644a.firebaseapp.com",
+    projectId: "mre23-4644a",
+    storageBucket: "mre23-4644a.firebasestorage.app",
+    messagingSenderId: "179268769077",
+    appId: "1:179268769077:web:d9fb8cd25ad284ae0de87c"
 };
 
 let db = null;
