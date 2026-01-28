@@ -160,7 +160,7 @@ async function loadProducts() {
         let allProducts = [];
 
         if (isFirebaseReady) {
-            const snapshot = await productsCol.orderBy('createdAt', 'desc').get();
+            const snapshot = await productsCol.orderBy('updatedAt', 'desc').get();
             snapshot.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
         }
 
@@ -175,7 +175,8 @@ async function loadProducts() {
         let cats = { clothes: 0, shoes: 0, pants: 0 };
 
         uniqueProds.forEach(p => {
-            cats[p.parentCategory] = (cats[p.parentCategory] || 0) + 1;
+            const cat = p.parentCategory || 'clothes';
+            cats[cat] = (cats[cat] || 0) + 1;
             html += `
                 <tr>
                     <td><img src="${p.image}" class="product-thumb"></td>
@@ -190,7 +191,7 @@ async function loadProducts() {
             `;
         });
 
-        productsListBody.innerHTML = html || '<tr><td colspan="5" style="text-align:center">لا توجد منتجات. اضغط على "إعادة تهيئة المتجر" لسحب المنتجات الحالية.</td></tr>';
+        productsListBody.innerHTML = html || '<tr><td colspan="5" style="text-align:center">لا توجد منتجات.</td></tr>';
         document.getElementById('stat-total').innerText = uniqueProds.length;
         document.getElementById('stat-clothes').innerText = cats.clothes;
         document.getElementById('stat-shoes').innerText = cats.shoes;
@@ -251,9 +252,33 @@ async function editProduct(id) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// Clear All Products
+async function clearAllProducts() {
+    if (!confirm("⚠️ تحذير: سيتم حذف جميع المنتجات نهائياً من المتجر والداتابيز. هل أنت متأكد؟")) return;
+    showLoader(true);
+    try {
+        // Clear Firebase
+        if (isFirebaseReady) {
+            const snapshot = await productsCol.get();
+            const batch = db.batch();
+            snapshot.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+        }
+        // Clear Local
+        localStorage.removeItem('diesel_products');
+
+        alert("تم تفريغ المتجر بنجاح! 🗑️");
+        loadProducts();
+    } catch (err) {
+        console.error(err);
+        alert("حدث خطأ أثناء الحذف!");
+    }
+    showLoader(false);
+}
+
 // Migration: Initial Import
 async function resetStore() {
-    if (!confirm("سيتم سحب جميع منتجات الموقع الحالية لتتمكن من التحكم بها. استمرار؟")) return;
+    if (!confirm("سيتم استيراد المنتجات الافتراضية للمتجر. استمرار؟")) return;
     showLoader(true);
 
     const script = document.createElement('script');
@@ -261,18 +286,23 @@ async function resetStore() {
     script.onload = async () => {
         let localProds = JSON.parse(localStorage.getItem('diesel_products') || '[]');
 
+        // Since products.js is now empty, this will essentially do nothing 
+        // unless you add products back to that file.
+        if (typeof products === 'undefined' || products.length === 0) {
+            alert("لا توجد منتجات افتراضية لاستيرادها (الملف فارغ).");
+            showLoader(false);
+            return;
+        }
+
         for (const p of products) {
-            // Check if already exists by name to avoid duplicates
             if (!localProds.some(lp => lp.name === p.name)) {
                 const newP = {
                     ...p,
                     id: 'L' + Date.now() + Math.random(),
                     parentCategory: p.subCategory === 'shoes' ? 'shoes' : (p.subCategory === 'jeans' || p.subCategory === 'sweatpants' ? 'pants' : 'clothes'),
-                    createdAt: new Date().toISOString()
+                    updatedAt: new Date().toISOString()
                 };
                 localProds.push(newP);
-
-                // If cloud is ready, also try to upload
                 if (isFirebaseReady) {
                     try { await productsCol.add(newP); } catch (e) { }
                 }
@@ -280,7 +310,7 @@ async function resetStore() {
         }
 
         localStorage.setItem('diesel_products', JSON.stringify(localProds));
-        alert("تم استيراد المنتجات بنجاح! 🎉 يمكنك الآن تعديلها أو حذفها.");
+        alert("تم الاستيراد بنجاح!");
         loadProducts();
         showLoader(false);
     };
